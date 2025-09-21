@@ -4,6 +4,7 @@ import json
 import logging
 import uuid
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS   # <-- add this
 from generator import GeneratorService
 from utils import ensure_folder
 from datetime import datetime
@@ -14,8 +15,13 @@ LOG.setLevel(logging.INFO)
 
 app = Flask(__name__)
 
+CORS(app)  # <-- allow all origins for now
+
 BASE_UPLOADS = os.environ.get("TEMP_FOLDER", os.path.join(os.path.dirname(__file__), "..", "uploads"))
 ensure_folder(BASE_UPLOADS)
+
+
+
 
 # In-memory sessions store
 SESSIONS = {}
