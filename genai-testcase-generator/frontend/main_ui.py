@@ -11,7 +11,7 @@ from urllib.parse import urljoin
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # 🔹 Start backend inside same container on same port
-from backend import backend_api
+from .backend import backend_api
 backend_api.run_backend()
 
 st.set_page_config(page_title="Healthcare Testcase Generator", page_icon="🧪", layout="centered")
