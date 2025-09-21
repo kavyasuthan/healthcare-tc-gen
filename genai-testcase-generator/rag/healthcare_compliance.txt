@@ -1,0 +1,87 @@
+Healthcare compliance notes: PHI must be protected. Role-based access, audit trails, encryption at rest and in transit. Data retention guidelines.
+
+
+Healthcare Software Compliance Guidelines – Snippets & Interpretations
+=====================================================================
+
+1. FDA – General Principles of Software Validation
+--------------------------------------------------
+Snippet:
+"Planning, verification, testing, traceability, configuration management, and many other aspects of good software engineering… help to support a final conclusion that software is validated."
+
+Interpretation:
+Ensure that validation covers the entire lifecycle with traceability from requirements to test artifacts.
+
+Source: FDA Guidance Document – https://www.fda.gov/media/73141/download
+
+
+2. FDA – 21 CFR Part 11 (Electronic Records & Signatures)
+----------------------------------------------------------
+Snippet:
+"Part 11 requires controls including audits, system validations, audit trails, electronic signatures, and documentation for software and systems involved in processing electronic data."
+
+Interpretation:
+Verify system enforces audit trails, user authentication, and secure electronic signatures.
+
+Source: https://en.wikipedia.org/wiki/Title_21_CFR_Part_11
+
+
+3. IEC 62304 – Medical Device Software Lifecycle
+-------------------------------------------------
+Snippet:
+"IEC 62304 requires a planned and documented software development lifecycle... every function with clear requirements, traceability, verification, and validation. The rigor scales with the safety classification (A, B, or C)."
+
+Interpretation:
+Ensure software lifecycle activities are proportional to safety class (A: low risk, B: medium, C: high).
+
+Source: https://en.wikipedia.org/wiki/IEC_62304
+
+
+4. ISO 13485 – Software Validation in Quality Systems
+------------------------------------------------------
+Snippet:
+"ISO 13485:2016 Section 4.1.6 and 7.5.6 require validation of computer software used in the QMS… validated prior to initial use and after changes… proportionate to the risk… records maintained."
+
+Interpretation:
+Validate software before initial deployment and re-validate after updates, maintaining records.
+
+Source: https://www.sqt-training.com/2021/09/understanding-the-software-validation-requirements-of-iso-134852016/
+
+
+5. ISO 14971 – Risk Management for Medical Devices
+---------------------------------------------------
+Snippet:
+"ISO 14971 specifies a process for risk analysis, evaluation, control, and review, and also specifies a procedure for review and monitoring during production and post-production."
+
+Interpretation:
+Document risk analysis and implement risk controls with ongoing production monitoring.
+
+Source: https://en.wikipedia.org/wiki/ISO_14971
+
+
+6. EU MDR / ISO 13485 – QMS Integration
+----------------------------------------
+Snippet:
+"Controls in the work environment to ensure product safety, focus on risk management and design control activities during product development, as well as documentation and validation of processes for sterile medical devices."
+
+Interpretation:
+Require process validation and safety-focused documentation in QMS and product lifecycle.
+
+Source: https://en.wikipedia.org/wiki/ISO_13485
+
+
+=====================================================================
+Usage for RAG Test Case Generation
+----------------------------------
+These compliance snippets can be embedded into your RAG corpus. Each requirement can be paired with relevant test cases.
+Example JSON structure:
+
+{
+  "source": "IEC_62304_Lifecycle",
+  "requirement": "IEC 62304 requires a planned and documented software development lifecycle with traceability, verification, and validation scaled by safety class.",
+  "testcases": [
+    "For Class C software, verify existence of architectural design documentation.",
+    "Check that unit testing exists for all implemented functions.",
+    "Verify traceability from requirements to tests and release notes."
+  ]
+}

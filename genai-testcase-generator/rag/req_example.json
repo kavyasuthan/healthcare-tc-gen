@@ -1,0 +1,197 @@
+[
+  {
+    "story_id": "HC-101",
+    "summary": "Patient demographics must be mandatory",
+    "requirement": "The system must validate that all patient demographic fields (Name, DOB, Gender, Address) are mandatory and properly formatted.",
+    "priority": "High",
+    "acceptance_criteria": [
+      "Given a user attempts to save a patient record, when any mandatory demographic field is missing, then the system must reject the record with a clear validation message.",
+      "All demographic fields must follow correct format rules (e.g., DOB in YYYY-MM-DD)."
+    ],
+    "testcases": [
+      "Verify that the system rejects a patient record without a date of birth.",
+      "Verify that the system rejects a patient record with an invalid date format (e.g., 32/13/2025).",
+      "Verify that the system accepts a valid patient record when all demographic fields are provided correctly."
+    ],
+    "compliance_traceability": [
+      "HIPAA §164.312(c)(1) - Data integrity",
+      "GDPR Article 5(1)(d) - Data accuracy"
+    ]
+  },
+  {
+    "story_id": "HC-102",
+    "summary": "Unique Patient ID",
+    "requirement": "Patient ID must be unique across the system.",
+    "priority": "High",
+    "acceptance_criteria": [
+      "Given a new patient is created, when an existing Patient ID is reused, then the system must reject with a uniqueness violation error.",
+      "Patient IDs must comply with hospital-defined alphanumeric format rules."
+    ],
+    "testcases": [
+      "Attempt to create two patients with the same Patient ID and ensure the system throws an error.",
+      "Verify that creating patients with different IDs is successful.",
+      "Verify that patient ID format complies with the hospital’s defined standard (e.g., alphanumeric length 10)."
+    ],
+    "compliance_traceability": [
+      "HIPAA §164.308(a)(1) - Unique identifiers",
+      "ISO 27799:2016 - Health informatics data quality"
+    ]
+  },
+  {
+    "story_id": "HC-103",
+    "summary": "EHR diagnosis validation",
+    "requirement": "EHR data should not allow null values in critical fields such as diagnosis and encounter date.",
+    "priority": "High",
+    "acceptance_criteria": [
+      "Given an EHR record, when mandatory fields (diagnosis, encounter date) are missing, then the system must reject the record.",
+      "Valid records with diagnosis and encounter date must be stored successfully."
+    ],
+    "testcases": [
+      "Insert an EHR record with a missing diagnosis and confirm that validation fails.",
+      "Insert an EHR record with a missing encounter date and confirm that validation fails.",
+      "Insert an EHR record with valid diagnosis and encounter date → Should be accepted."
+    ],
+    "compliance_traceability": [
+      "HL7 CDA R2 - Clinical document requirements",
+      "ICD-10 Coding Standards"
+    ]
+  },
+  {
+    "story_id": "HC-104",
+    "summary": "Drug allergy check",
+    "requirement": "Prescriptions must be cross-checked for drug allergies before approval.",
+    "priority": "Critical",
+    "acceptance_criteria": [
+      "Given a patient has a known allergy, when a conflicting drug is prescribed, then the system must alert the prescriber before approval.",
+      "If no allergies exist, prescriptions should be processed normally."
+    ],
+    "testcases": [
+      "Prescribe 'Penicillin' to a patient with a known Penicillin allergy → System should raise an alert.",
+      "Prescribe 'Amoxicillin' to a patient with no recorded allergies → System should allow prescription.",
+      "Update patient’s allergy list and verify that new prescriptions are validated against the updated list."
+    ],
+    "compliance_traceability": [
+      "FDA 21 CFR Part 11 - Patient safety",
+      "HIPAA §164.306 - Safeguards"
+    ]
+  },
+  {
+    "story_id": "HC-105",
+    "summary": "Insurance claim validation",
+    "requirement": "Insurance claim forms must include patient ID, provider ID, diagnosis codes (ICD-10), and procedure codes (CPT).",
+    "priority": "Medium",
+    "acceptance_criteria": [
+      "Given a claim submission, when any mandatory field is missing, then the system must reject the claim with an error message.",
+      "Duplicate claims for the same patient encounter must be flagged.",
+      "Valid claims with all mandatory fields should be successfully submitted."
+    ],
+    "testcases": [
+      "Submit a claim without ICD-10 code and validate rejection.",
+      "Submit a claim with all mandatory fields filled correctly → Should be accepted.",
+      "Submit a duplicate claim with the same patient ID and encounter → System should flag as duplicate."
+    ],
+    "compliance_traceability": [
+      "HIPAA X12 837 - Electronic claim submission standard",
+      "CMS claim submission guidelines"
+    ]
+  },
+  {
+    "story_id": "HC-106",
+    "summary": "Unauthorized access restriction",
+    "requirement": "Patient health data must not be viewable by unauthorized users.",
+    "priority": "Critical",
+    "acceptance_criteria": [
+      "Given a user with insufficient privileges, when they attempt to access a patient record, then access must be denied.",
+      "Authorized roles (e.g., doctors, nurses) must be able to access records as per role definitions.",
+      "All denied access attempts must be logged."
+    ],
+    "testcases": [
+      "Attempt to access patient record as a user with 'Billing Only' role → Access should be denied.",
+      "Verify that a doctor with correct privileges can access the same patient record.",
+      "Verify that access attempts are logged in the audit trail for compliance."
+    ],
+    "compliance_traceability": [
+      "HIPAA §164.312(a)(1) - Access control",
+      "GDPR Article 32 - Data security"
+    ]
+  },
+  {
+    "story_id": "HC-107",
+    "summary": "Audit log validation",
+    "requirement": "Audit logs must record every read, update, or delete of patient data.",
+    "priority": "High",
+    "acceptance_criteria": [
+      "Given a user interacts with patient data, when a read/update/delete occurs, then the system must create an audit log entry with timestamp, action, and user ID.",
+      "Audit logs must be immutable and retrievable for compliance checks."
+    ],
+    "testcases": [
+      "Verify that when a nurse updates patient vitals, an audit entry is created with timestamp and user ID.",
+      "Verify that when a patient record is deleted, the delete action is logged.",
+      "Verify that read-only access to a patient record is also captured in the audit log."
+    ],
+    "compliance_traceability": [
+      "HIPAA §164.312(b) - Audit controls",
+      "ISO 27001:2013 A.12.4 - Logging and monitoring"
+    ]
+  },
+  {
+    "story_id": "HC-108",
+    "summary": "Lab results validation",
+    "requirement": "Lab test results must be linked to the correct patient encounter.",
+    "priority": "High",
+    "acceptance_criteria": [
+      "Given a lab result upload, when the encounter ID does not match an existing encounter, then the system must reject the result.",
+      "Valid lab results with correct patient and encounter mapping must be stored.",
+      "Abnormal/critical values must be flagged appropriately."
+    ],
+    "testcases": [
+      "Upload lab result with a wrong encounter ID → System should reject.",
+      "Upload lab result with correct encounter ID → System should accept.",
+      "Upload lab result with abnormal values (e.g., hemoglobin < 7) → System should flag as 'Critical'."
+    ],
+    "compliance_traceability": [
+      "CLIA Regulations - Clinical lab data integrity",
+      "HL7 v2 - Lab result messaging"
+    ]
+  },
+  {
+    "story_id": "HC-109",
+    "summary": "Physician double-booking prevention",
+    "requirement": "Double-booking of physicians must not be allowed.",
+    "priority": "Medium",
+    "acceptance_criteria": [
+      "Given a doctor already has an appointment at a certain time, when another appointment is scheduled at the same time, then the system must prevent it.",
+      "Appointments at different times should be allowed.",
+      "Conflicting/overlapping schedules must raise a conflict warning."
+    ],
+    "testcases": [
+      "Schedule two patients with Dr. Smith at the same time slot → System should prevent booking.",
+      "Schedule two patients with Dr. Smith at different times → Both should be accepted.",
+      "Schedule overlapping appointments for the same doctor → System should raise a conflict warning."
+    ],
+    "compliance_traceability": [
+      "Joint Commission - Patient safety in scheduling",
+      "ISO 27799 - Health informatics: Scheduling controls"
+    ]
+  },
+  {
+    "story_id": "HC-110",
+    "summary": "FHIR standard compliance",
+    "requirement": "System must support HL7 / FHIR standards for data exchange.",
+    "priority": "High",
+    "acceptance_criteria": [
+      "Given patient data, when exported, then it must comply with FHIR JSON schema.",
+      "Given a valid HL7/FHIR message, when imported, then patient data must be stored correctly.",
+      "Malformed HL7/FHIR messages must be rejected with a clear error."
+    ],
+    "testcases": [
+      "Export patient demographics in FHIR JSON format and validate schema compliance.",
+      "Import a valid HL7 message and ensure patient data is stored correctly.",
+      "Attempt to import a malformed FHIR JSON → System should reject with an error message."
+    ],
+    "compliance_traceability": [
+      "HL7 FHIR Release 4 - Data exchange",
+      "ONC Cures Act Interoperability Rule"
+    ]
+  }
+]
