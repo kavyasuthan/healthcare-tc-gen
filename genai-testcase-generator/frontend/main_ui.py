@@ -1,11 +1,14 @@
 # frontend/main_ui.py
+import sys, os
 import streamlit as st
 import shutil
 from components import create_session_folder, tabs_ui
 from input_handler import InputHandler
 import requests
-import os
 from urllib.parse import urljoin
+
+# 🔹 Ensure project root (/app) is in sys.path so "backend" is importable
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # 🔹 Start backend inside same container on same port
 from backend import backend_api
