@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify, send_file
 from generator import GeneratorService
 from utils import ensure_folder
 from datetime import datetime
+import threading
 
 LOG = logging.getLogger("backend")
 LOG.setLevel(logging.INFO)
@@ -16,25 +17,12 @@ app = Flask(__name__)
 BASE_UPLOADS = os.environ.get("TEMP_FOLDER", os.path.join(os.path.dirname(__file__), "..", "uploads"))
 ensure_folder(BASE_UPLOADS)
 
-# In-memory sessions store (for admin later). Stores raw + reviewed outputs, metadata.
+# In-memory sessions store
 SESSIONS = {}
-
 GENERATOR = GeneratorService()
 
 @app.route("/generate_testcases", methods=["POST"])
 def generate_testcases():
-    """
-    Request JSON expected:
-    {
-      "username": "user",
-      "inputs": {
-         "typed_requirements": [...],
-         "uploaded_files": [{"file_name":"x","content":"..."}],
-         "alm_inputs": { "Jira": {"tickets": [...]}, ... }
-      },
-      "alm_tool": "jira"   # optional override
-    }
-    """
     try:
         payload = request.get_json(force=True)
         if not payload:
@@ -49,7 +37,6 @@ def generate_testcases():
 
         LOG.info("Generating test cases for user=%s alm_tool=%s", username, alm_tool)
 
-        # Call generator -> this will call Vertex AI, RAG, few-shot and reviewer internally.
         raw_cases, reviewed_cases, columns, prompt_used = GENERATOR.generate_full_pipeline(
             typed_requirements=typed,
             uploaded_files=uploaded_files,
@@ -57,7 +44,6 @@ def generate_testcases():
             alm_tool=alm_tool
         )
 
-        # Save to temp folder
         ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         safe_user = "".join([c if c.isalnum() else "_" for c in username]) or "user"
         session_id = str(uuid.uuid4())
@@ -67,14 +53,11 @@ def generate_testcases():
         raw_path = os.path.join(out_dir, f"{safe_user}_raw_{alm_tool}_{ts}.json")
         reviewed_path = os.path.join(out_dir, f"{safe_user}_reviewed_{alm_tool}_{ts}.xlsx")
 
-        # Save raw JSON
         with open(raw_path, "w", encoding="utf-8") as f:
             json.dump(raw_cases, f, indent=2, ensure_ascii=False)
 
-        # Save reviewed to excel (pandas used inside GeneratorService)
         reviewed_cases.to_excel(reviewed_path, index=False)
 
-        # Store session metadata
         SESSIONS[session_id] = {
             "username": username,
             "created_at": datetime.utcnow().isoformat() + "Z",
@@ -85,7 +68,6 @@ def generate_testcases():
             "alm_tool": alm_tool
         }
 
-        # Build preview HTML (first 10 rows)
         preview_html = reviewed_cases.head(10).to_html(index=False, escape=False)
 
         resp = {
@@ -103,7 +85,6 @@ def generate_testcases():
         LOG.exception("generate_testcases failed")
         return jsonify({"error": str(e)}), 500
 
-
 @app.route("/download_reviewed/<session_id>/<filename>", methods=["GET"])
 def download_reviewed(session_id, filename):
     s = SESSIONS.get(session_id)
@@ -113,7 +94,6 @@ def download_reviewed(session_id, filename):
     if not path or os.path.basename(path) != filename:
         return "File not found", 404
     return send_file(path, as_attachment=True)
-
 
 @app.route("/download_raw/<session_id>/<filename>", methods=["GET"])
 def download_raw(session_id, filename):
@@ -125,13 +105,12 @@ def download_raw(session_id, filename):
         return "File not found", 404
     return send_file(path, as_attachment=True)
 
-
 @app.route("/status", methods=["GET"])
 def status():
     return jsonify({"ok": True, "sessions": len(SESSIONS)})
 
-
-if __name__ == "__main__":
-    # Prefer BACKEND_PORT; if not set, fall back to PORT (container runtime port). Final fallback is 8080.
-    port = int(os.environ.get("BACKEND_PORT") or os.environ.get("PORT") or 8080)
-    app.run(host="0.0.0.0", port=port, debug=os.environ.get("DEBUG", "false").lower() == "true")
+def run_backend():
+    port = int(os.environ.get("PORT", 8080))  # same as Streamlit
+    threading.Thread(
+        target=lambda: app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
+    ).start()

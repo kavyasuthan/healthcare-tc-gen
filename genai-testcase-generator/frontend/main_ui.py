@@ -7,6 +7,10 @@ import requests
 import os
 from urllib.parse import urljoin
 
+# 🔹 Start backend inside same container on same port
+from backend import backend_api
+backend_api.run_backend()
+
 st.set_page_config(page_title="Healthcare Testcase Generator", page_icon="🧪", layout="centered")
 
 st.markdown("""
@@ -34,16 +38,8 @@ st.session_state.setdefault('last_session_id', None)
 st.session_state.setdefault('last_preview_html', None)
 st.session_state.setdefault('last_columns', None)
 
-# Resolve BACKEND_URL robustly:
-# 1) If explicit BACKEND_URL env var is set, use it (strip trailing slash).
-# 2) Otherwise derive from BACKEND_PORT or PORT (whichever is provided).
-# 3) Final fallback: http://127.0.0.1:8080
-_env_backend = os.getenv("BACKEND_URL")
-if _env_backend:
-    BACKEND_URL = _env_backend.rstrip("/")
-else:
-    _port = os.getenv("BACKEND_PORT") or os.getenv("PORT") or "8080"
-    BACKEND_URL = f"http://127.0.0.1:{_port}"
+# 🔹 Backend URL = same Cloud Run service (port 8080)
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8080")
 
 if not st.session_state.username_set:
     username_input = st.text_input("Enter your username")
@@ -82,7 +78,6 @@ with col1:
                     st.markdown(st.session_state.last_preview_html, unsafe_allow_html=True)
                 dl = data.get("download_reviewed")
                 if dl:
-                    # Build download link using BACKEND_URL (already derived above)
                     link = urljoin(BACKEND_URL, dl.lstrip("/"))
                     st.markdown(f"**Download Excel:** [Click Here]({link})")
             else:
@@ -94,7 +89,10 @@ with col2:
     if st.button("🗑️ End Session"):
         if st.session_state.session_folder:
             shutil.rmtree(st.session_state.session_folder, ignore_errors=True)
-        keys = ['session_folder','username','typed_requirements','uploaded_files','alm_inputs','username_set','last_session_id','last_preview_html','last_columns']
+        keys = [
+            'session_folder','username','typed_requirements','uploaded_files',
+            'alm_inputs','username_set','last_session_id','last_preview_html','last_columns'
+        ]
         for k in keys:
             if k in st.session_state:
                 del st.session_state[k]
