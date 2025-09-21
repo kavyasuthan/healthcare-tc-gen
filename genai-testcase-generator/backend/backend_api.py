@@ -132,5 +132,6 @@ def status():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("BACKEND_PORT", 5000))
+    # Prefer BACKEND_PORT; if not set, fall back to PORT (container runtime port). Final fallback is 8080.
+    port = int(os.environ.get("BACKEND_PORT") or os.environ.get("PORT") or 8080)
     app.run(host="0.0.0.0", port=port, debug=os.environ.get("DEBUG", "false").lower() == "true")

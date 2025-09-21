@@ -19,6 +19,6 @@ EXPOSE 8080
 
 ENV PORT=8080
 ENV BACKEND_PORT=5000
-ENV BACKEND_URL=http://localhost:5000
+# NOTE: don't hardcode BACKEND_URL here so the app derives it from BACKEND_PORT/PORT at runtime.
 
 CMD ["./start.sh"]

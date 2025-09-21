@@ -34,8 +34,16 @@ st.session_state.setdefault('last_session_id', None)
 st.session_state.setdefault('last_preview_html', None)
 st.session_state.setdefault('last_columns', None)
 
-# ✅ Fix: default to 127.0.0.1:8080 for Cloud Run instead of empty string
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8080")
+# Resolve BACKEND_URL robustly:
+# 1) If explicit BACKEND_URL env var is set, use it (strip trailing slash).
+# 2) Otherwise derive from BACKEND_PORT or PORT (whichever is provided).
+# 3) Final fallback: http://127.0.0.1:8080
+_env_backend = os.getenv("BACKEND_URL")
+if _env_backend:
+    BACKEND_URL = _env_backend.rstrip("/")
+else:
+    _port = os.getenv("BACKEND_PORT") or os.getenv("PORT") or "8080"
+    BACKEND_URL = f"http://127.0.0.1:{_port}"
 
 if not st.session_state.username_set:
     username_input = st.text_input("Enter your username")
@@ -73,7 +81,8 @@ with col1:
                     st.subheader("Preview (first 10 rows)")
                     st.markdown(st.session_state.last_preview_html, unsafe_allow_html=True)
                 dl = data.get("download_reviewed")
-                if dl and BACKEND_URL:
+                if dl:
+                    # Build download link using BACKEND_URL (already derived above)
                     link = urljoin(BACKEND_URL, dl.lstrip("/"))
                     st.markdown(f"**Download Excel:** [Click Here]({link})")
             else:
