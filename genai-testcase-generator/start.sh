@@ -10,4 +10,4 @@ export STREAMLIT_SERVER_ENABLE_CORS=false
 # Backend will run on same PORT internally
 export BACKEND_URL=http://127.0.0.1:${STREAMLIT_PORT}
 
-streamlit run frontend/main_ui.py --server.port ${STREAMLIT_PORT} --server.address 0.0.0.0
+streamlit run backend/main_ui.py --server.port ${STREAMLIT_PORT} --server.address 0.0.0.0

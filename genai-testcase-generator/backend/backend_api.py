@@ -4,8 +4,8 @@ import json
 import logging
 import uuid
 from flask import Flask, request, jsonify, send_file
-from .generator import GeneratorService
-from .utils import ensure_folder
+from generator import GeneratorService
+from utils import ensure_folder
 from datetime import datetime
 import threading
 
