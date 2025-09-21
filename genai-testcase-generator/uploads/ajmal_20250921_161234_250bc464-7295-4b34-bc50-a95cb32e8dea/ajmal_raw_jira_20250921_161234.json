@@ -1,0 +1,128 @@
+[
+  {
+    "summary": "Patient successfully views available appointment slots",
+    "description": "Verify that a logged-in patient can view a doctor's available appointment slots for future dates, ensuring clear presentation.",
+    "customfield_requirement": "APPT-101.1",
+    "steps": "1. Log in as a Patient.\n2. Navigate to the 'Book Appointment' section.\n3. Select a Doctor from the list.\n4. Select a future date.",
+    "actions": "System displays available time slots for the selected doctor and date.",
+    "expectedResults": "Available time slots are clearly displayed, indicating which slots are open for booking. Slots for past dates are not shown as available.",
+    "acceptanceCriteria": "The system shall allow patients to view available appointment slots for doctors."
+  },
+  {
+    "summary": "Patient successfully books an available appointment slot",
+    "description": "Verify that a patient can successfully book an appointment for a selected doctor and available timeslot, and the system processes the request correctly.",
+    "customfield_requirement": "APPT-101.2, FDA 21 CFR Part 11 &11.10",
+    "steps": "1. Log in as a Patient.\n2. View available slots for a doctor and date.\n3. Select an available time slot.\n4. Confirm booking.",
+    "actions": "System processes the booking request and updates the slot status.",
+    "expectedResults": "Booking confirmation message is displayed, the slot is marked as 'booked' or 'unavailable', and the patient's 'My Appointments' list is updated.",
+    "acceptanceCriteria": "Patients shall be able to book appointments for the selected doctor and timeslot."
+  },
+  {
+    "summary": "Booking confirmation email is sent to the patient",
+    "description": "Verify that a confirmation email is automatically sent to the patient's registered email address after a successful appointment booking, adhering to PHI guidelines.",
+    "customfield_requirement": "APPT-101.3, HIPAA Security Rule &164.312",
+    "steps": "1. Perform a successful appointment booking as a Patient.\n2. Access the patient's registered email inbox.",
+    "actions": "An email is sent to the patient's registered email address.",
+    "expectedResults": "A confirmation email containing essential appointment details (doctor, date, time, patient name) is received in the patient's inbox. No excessive PHI is exposed.",
+    "acceptanceCriteria": "The system shall send confirmation emails to patients after booking."
+  },
+  {
+    "summary": "Patient successfully reschedules an appointment within the allowed timeframe",
+    "description": "Verify that a patient can reschedule an existing appointment to a new available slot, provided the rescheduling occurs more than 24 hours before the original appointment time.",
+    "customfield_requirement": "APPT-101.4, FDA 21 CFR Part 11 &11.10(e)",
+    "steps": "1. Log in as a Patient.\n2. Navigate to 'My Appointments'.\n3. Select an upcoming appointment scheduled for 48 hours from now.\n4. Click 'Reschedule' and choose a new available slot.\n5. Confirm rescheduling.",
+    "actions": "System updates the appointment to the new time and releases the old slot.",
+    "expectedResults": "Appointment is successfully rescheduled, and a confirmation/updated email is sent. The old slot becomes available for others to book.",
+    "acceptanceCriteria": "The system shall allow rescheduling of appointments up to 24 hours before the scheduled time."
+  },
+  {
+    "summary": "Admin successfully views all appointments in a calendar view",
+    "description": "Verify that an authorized admin user can access and view all scheduled appointments for all doctors in a clear calendar format, respecting role-based access.",
+    "customfield_requirement": "APPT-101.5, HIPAA Privacy Rule &164.502",
+    "steps": "1. Log in as an Administrator.\n2. Navigate to the 'Appointment Management' or 'Calendar' section.",
+    "actions": "System displays the calendar view.",
+    "expectedResults": "A comprehensive calendar view showing all appointments, doctors, and patient names (if authorized for this role) is displayed. Filtering options are available.",
+    "acceptanceCriteria": "Admins shall be able to view all appointments in a calendar view."
+  },
+  {
+    "summary": "System prevents booking of an already occupied appointment slot",
+    "description": "Verify that the system correctly prevents a patient from booking an appointment slot that has already been taken, especially in a concurrent scenario to avoid double-booking.",
+    "customfield_requirement": "APPT-101.6, ISO 13485:2016 &7.5",
+    "steps": "1. As Patient A, select an available slot (do not confirm yet).\n2. As Patient B (another user/browser), quickly book the *same* slot.\n3. As Patient A, attempt to confirm booking the slot.",
+    "actions": "Patient A's booking attempt after Patient B has booked the slot.",
+    "expectedResults": "Patient A's booking attempt fails with an appropriate error message indicating the slot is no longer available or has been taken.",
+    "acceptanceCriteria": "The system shall prevent double-booking of the same slot for a doctor."
+  },
+  {
+    "summary": "System prevents rescheduling an appointment within 24 hours of its scheduled time",
+    "description": "Verify that the system enforces the 24-hour rescheduling policy and prevents patients from rescheduling appointments too close to their scheduled time.",
+    "customfield_requirement": "APPT-101.4, IEC 62304 &5.2.4",
+    "steps": "1. Log in as a Patient.\n2. Navigate to 'My Appointments'.\n3. Select an upcoming appointment scheduled for 30 minutes from now.\n4. Attempt to click 'Reschedule' or proceed with rescheduling.",
+    "actions": "System attempts to initiate or confirm reschedule.",
+    "expectedResults": "The 'Reschedule' option is either disabled, or an error message is displayed stating that the appointment cannot be rescheduled within 24 hours of the scheduled time.",
+    "acceptanceCriteria": "The system shall allow rescheduling of appointments up to 24 hours before the scheduled time (implies prevention within 24 hours)."
+  },
+  {
+    "summary": "System rejects appointment booking with missing mandatory patient details",
+    "description": "Verify that the system prevents an appointment booking if critical patient demographic fields (e.g., date of birth, contact information) are missing or invalid during the booking process.",
+    "customfield_requirement": "APPT-101.2, FDA 21 CFR Part 11 &11.10, ISO 13485:2016 &7.5",
+    "steps": "1. Log in as a Patient.\n2. Select an available slot.\n3. Proceed to the booking confirmation screen.\n4. Intentionally leave a mandatory field (e.g., phone number) blank or enter an invalid format.\n5. Attempt to confirm booking.",
+    "actions": "System validates patient input before confirming the booking.",
+    "expectedResults": "The system displays a clear validation error message for the missing/invalid field and prevents the booking from being completed until corrected.",
+    "acceptanceCriteria": "Appointment booking requires all mandatory patient details to be complete and valid."
+  },
+  {
+    "summary": "Unauthorized user cannot access patient appointment details",
+    "description": "Verify that a user logged in with a role without privileges (e.g., a 'Billing Only' user, or a non-authenticated user) cannot access or view specific patient appointment details.",
+    "customfield_requirement": "APPT-101.7, HIPAA Security Rule &164.312, HIPAA Privacy Rule &164.502",
+    "steps": "1. Log in with a user account having limited permissions (e.g., a 'Receptionist' or 'Billing Only' role).\n2. Attempt to navigate directly to a patient's sensitive appointment details page (e.g., by guessing a URL or using an ID).",
+    "actions": "System processes the access request for the unauthorized user.",
+    "expectedResults": "Access is denied, either by redirection to an 'Access Denied' page, displaying an error message, or by completely masking/omitting PHI. No PHI is revealed.",
+    "acceptanceCriteria": "All actions must comply with HIPAA standards for data privacy, ensuring only authorized users can access patient data."
+  },
+  {
+    "summary": "Successful appointment booking action is recorded in the audit trail",
+    "description": "Verify that every successful appointment booking action is accurately logged in the system's audit trail, including details like user ID, timestamp, and specific action performed.",
+    "customfield_requirement": "APPT-101.7, FDA 21 CFR Part 11 &11.10(e), ISO 13485 &4.2.5",
+    "steps": "1. Log in as a Patient and successfully book an appointment.\n2. Log in as an Administrator with audit log viewing privileges.\n3. Access the system audit logs.\n4. Filter logs for the booking event.",
+    "actions": "System records the booking event in the audit trail.",
+    "expectedResults": "An audit log entry is found detailing the patient's user ID, the timestamp of the booking, the doctor, date, and time of the appointment, and the action 'Appointment Booked'.",
+    "acceptanceCriteria": "All actions must comply with HIPAA standards for data privacy, specifically requiring audit trails for data changes."
+  },
+  {
+    "summary": "Non-admin user cannot access the Admin Calendar View",
+    "description": "Verify that only users with the designated 'Admin' role can access the full calendar view of all appointments, ensuring strict role-based access control.",
+    "customfield_requirement": "APPT-101.5, APPT-101.7, HIPAA Privacy Rule &164.502, GDPR Article 32",
+    "steps": "1. Log in as a non-admin user (e.g., a Patient or a Doctor).\n2. Attempt to navigate to the 'Appointment Management' or 'Admin Calendar' section (e.g., via direct URL or menu option).",
+    "actions": "System processes the access request from the non-admin user.",
+    "expectedResults": "Access is denied, or the 'Admin Calendar' option is not visible/accessible to the non-admin user, preventing unauthorized viewing of all appointments.",
+    "acceptanceCriteria": "Admins shall be able to view all appointments in a calendar view, implying restricted access for other roles due to PHI."
+  },
+  {
+    "summary": "Admin calendar loads efficiently with a large number of appointments",
+    "description": "Measure the loading time of the Admin calendar view when displaying a substantial volume of appointments (e.g., 500+ appointments over a month), to ensure performance and usability.",
+    "customfield_requirement": "APPT-101.5, IEC 62304",
+    "steps": "1. Populate the system with 500+ appointments spread across multiple doctors and days.\n2. Log in as an Administrator.\n3. Navigate to the 'Appointment Management' or 'Calendar' section.\n4. Record the time taken for the calendar to fully render.",
+    "actions": "System renders the calendar with a high volume of appointment data.",
+    "expectedResults": "The calendar view loads within an acceptable timeframe (e.g., less than 5-7 seconds) and all appointments are correctly displayed without UI lag or errors.",
+    "acceptanceCriteria": "The Admin calendar view should load efficiently even with a large dataset, ensuring effective management."
+  },
+  {
+    "summary": "User receives clear error message when attempting double-booking",
+    "description": "Verify that when a patient attempts to book an unavailable or already taken slot, the system provides a clear, understandable, and actionable error message to improve user experience.",
+    "customfield_requirement": "APPT-101.6, IEC 62304 &5.2.4",
+    "steps": "1. Log in as a Patient.\n2. Identify a slot that is already booked or make an attempt to double book.\n3. Select the unavailable slot and attempt to book.",
+    "actions": "System validates slot availability upon booking attempt.",
+    "expectedResults": "A user-friendly error message is displayed (e.g., 'This slot is no longer available. Please choose another time.') guiding the user to resolve the issue, rather than a generic system error.",
+    "acceptanceCriteria": "The system shall prevent double-booking of the same slot for a doctor and provide clear user feedback on failure."
+  },
+  {
+    "summary": "Confirmation email securely handles PHI",
+    "description": "Verify that the confirmation email sent to patients only includes necessary PHI and does not expose sensitive details unnecessarily, adhering to HIPAA's minimum necessary principle.",
+    "customfield_requirement": "APPT-101.3, APPT-101.7, HIPAA Security Rule &164.312",
+    "steps": "1. Book an appointment as a Patient.\n2. Access the patient's registered email inbox.\n3. Review the content of the confirmation email received.",
+    "actions": "System generates and sends the email containing appointment details.",
+    "expectedResults": "The email contains only essential appointment details (Patient Name, Doctor Name, Date, Time, Location). No excessive or unmasked PHI (e.g., full medical history, diagnosis, sensitive notes) is included.",
+    "acceptanceCriteria": "Confirmation emails should include relevant information while adhering to HIPAA's minimum necessary standard for PHI."
+  }
+]

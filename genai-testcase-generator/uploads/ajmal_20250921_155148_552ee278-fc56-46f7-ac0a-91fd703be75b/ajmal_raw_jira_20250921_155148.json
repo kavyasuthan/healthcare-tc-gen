@@ -1,0 +1,137 @@
+[
+  {
+    "summary": "Validate patient can view available appointment slots.",
+    "description": "Ensure the system displays correct and current available appointment slots for doctors.",
+    "customfield_requirement": "Patients shall be able to view available appointment slots for doctors.",
+    "steps": "Login as a patient. Navigate to the appointment booking section. Search for 'Dr. Smith' for the upcoming week.",
+    "actions": "View available slots for Dr. Smith.",
+    "expectedResults": "System displays all open slots for Dr. Smith for the selected week.",
+    "acceptanceCriteria": "All available slots for the selected doctor are displayed accurately and are selectable."
+  },
+  {
+    "summary": "Verify patient can successfully book an available appointment.",
+    "description": "Test the end-to-end process of a patient booking an appointment for an available slot.",
+    "customfield_requirement": "Patients shall be able to book appointments for the selected doctor and timeslot.",
+    "steps": "Login as a patient. Select an available slot for 'Dr. Jones' on 2024-12-01 at 10:00 AM. Proceed with booking confirmation.",
+    "actions": "Book an available slot with Dr. Jones.",
+    "expectedResults": "Appointment is confirmed, the slot is marked as booked, and the patient is redirected to a confirmation page with appointment details.",
+    "acceptanceCriteria": "Appointment is successfully booked and reflects in the patient's upcoming schedule."
+  },
+  {
+    "summary": "Ensure confirmation emails are sent upon successful booking.",
+    "description": "Verify that patients receive a confirmation email with all appointment details after booking.",
+    "customfield_requirement": "The system shall send confirmation emails to patients after booking.",
+    "steps": "Book an appointment as a patient with a valid email address. Check the patient's registered email inbox.",
+    "actions": "Verify receipt of the confirmation email.",
+    "expectedResults": "A confirmation email is received containing correct doctor, date, time, and patient details.",
+    "acceptanceCriteria": "Patient receives a timely and accurate confirmation email for the booked appointment."
+  },
+  {
+    "summary": "Validate patient can reschedule within the allowed timeframe.",
+    "description": "Test rescheduling an appointment more than 24 hours prior to the original scheduled time.",
+    "customfield_requirement": "The system shall allow rescheduling of appointments up to 24 hours before the scheduled time.",
+    "steps": "Login as a patient. View upcoming appointments. Select an appointment scheduled for 3 days away. Choose a new available slot.",
+    "actions": "Reschedule the appointment 72 hours before its original time to a new slot.",
+    "expectedResults": "Appointment is successfully rescheduled to the new time and date, and the original slot is released.",
+    "acceptanceCriteria": "Appointment is successfully rescheduled when the request is made more than 24 hours in advance."
+  },
+  {
+    "summary": "Verify admin can view all appointments in calendar view.",
+    "description": "Test the admin's ability to access and view the comprehensive appointment calendar for all doctors.",
+    "customfield_requirement": "Admins shall be able to view all appointments in a calendar view.",
+    "steps": "Login as an admin user. Navigate to the 'Admin Calendar' section of the application.",
+    "actions": "View all appointments in the calendar view.",
+    "expectedResults": "All scheduled appointments for all doctors are displayed correctly on the calendar for the selected period.",
+    "acceptanceCriteria": "Admin user can successfully access and view all appointments in a consolidated calendar view."
+  },
+  {
+    "summary": "Ensure system prevents booking an already taken slot.",
+    "description": "Verify the system's robustness in preventing duplicate bookings for the same doctor and timeslot.",
+    "customfield_requirement": "The system shall prevent double-booking of the same slot for a doctor.",
+    "steps": "User A books a slot (e.g., Dr. Smith, 2024-12-01, 11:00 AM). Immediately after, User B attempts to book the exact same slot.",
+    "actions": "Attempt to book a slot that has just become unavailable.",
+    "expectedResults": "System displays an error message such as 'Slot no longer available' or 'This slot is already booked' and prevents User B's booking.",
+    "acceptanceCriteria": "System prevents double-booking of a single slot by different patients."
+  },
+  {
+    "summary": "Verify system prevents rescheduling within 24 hours of appointment.",
+    "description": "Test the boundary condition for appointment rescheduling, specifically when a request is made less than 24 hours before the scheduled time.",
+    "customfield_requirement": "The system shall allow rescheduling of appointments up to 24 hours before the scheduled time.",
+    "steps": "Login as a patient. Select an appointment scheduled for 2 hours later. Attempt to initiate a reschedule.",
+    "actions": "Attempt to reschedule an appointment 2 hours before its scheduled time.",
+    "expectedResults": "System displays an error message 'Rescheduling not allowed within 24 hours' and prevents the action.",
+    "acceptanceCriteria": "System prevents rescheduling requests made less than 24 hours before the appointment time."
+  },
+  {
+    "summary": "Prevent a non-privileged patient from viewing another patient's appointment details.",
+    "description": "Verify role-based access controls prevent unauthorized access to PHI in appointment details.",
+    "customfield_requirement": "All actions must comply with HIPAA standards for data privacy. (HIPAA Privacy Rule &164.502)",
+    "steps": "Login as Patient A. Attempt to access or view appointment details belonging to Patient B (e.g., by manipulating URL parameters).",
+    "actions": "Attempt to view another patient's appointment details.",
+    "expectedResults": "System denies access or redirects to an 'Access Denied' page; no PHI of Patient B is displayed.",
+    "acceptanceCriteria": "Patients can only view their own appointment details; unauthorized cross-patient data access is prevented."
+  },
+  {
+    "summary": "Ensure rescheduling actions are recorded in audit logs.",
+    "description": "Verify that every appointment rescheduling action generates an immutable audit log entry.",
+    "customfield_requirement": "All actions must comply with HIPAA standards for data privacy. (FDA 21 CFR Part 11 &11.10(e))",
+    "steps": "Patient reschedules an appointment. An admin/auditor accesses the system's audit logs.",
+    "actions": "Verify audit log entry for a rescheduled appointment.",
+    "expectedResults": "Audit log contains an entry detailing the user ID, timestamp, original appointment time, new appointment time, and action type (reschedule).",
+    "acceptanceCriteria": "All appointment rescheduling actions are immutably logged with comprehensive details for compliance."
+  },
+  {
+    "summary": "Verify only authorized admin users can view the full appointment calendar.",
+    "description": "Ensure strict role-based access control for the admin-level calendar view.",
+    "customfield_requirement": "Admins shall be able to view all appointments in a calendar view. (HIPAA Security Rule &164.312)",
+    "steps": "Login as a 'Doctor' or 'Nurse' user (non-admin role). Attempt to navigate to the 'Admin Calendar' view.",
+    "actions": "Attempt to access Admin Calendar with a non-admin role.",
+    "expectedResults": "System denies access, displays an appropriate error message (e.g., 'Unauthorized Access'), or redirects to a permitted page.",
+    "acceptanceCriteria": "Only users with the 'Admin' role can access the comprehensive appointment calendar view."
+  },
+  {
+    "summary": "Test system performance when displaying many available slots.",
+    "description": "Evaluate the responsiveness of the slot availability display when a doctor has a high number of open slots over an extended period.",
+    "customfield_requirement": "Patients shall be able to view available appointment slots for doctors.",
+    "steps": "Configure a doctor with 500+ available slots spanning several months. Login as a patient and search for this doctor's availability.",
+    "actions": "Load available slots for a doctor with a large number of open slots.",
+    "expectedResults": "Available slots load within an acceptable time (e.g., <3 seconds), and the user interface remains responsive during interaction.",
+    "acceptanceCriteria": "System efficiently displays a large number of available slots without significant performance degradation."
+  },
+  {
+    "summary": "Ensure booked slots are clearly distinguishable to patients.",
+    "description": "Verify that the user interface clearly communicates which slots are unavailable due to being booked.",
+    "customfield_requirement": "Patients shall be able to view available appointment slots for doctors.",
+    "steps": "Login as a patient. View available slots for a doctor who has some slots already booked by other patients.",
+    "actions": "Observe the display of available vs. booked slots on the calendar/list.",
+    "expectedResults": "Booked slots are clearly marked (e.g., greyed out, strike-through, labeled 'Booked') and cannot be selected for booking.",
+    "acceptanceCriteria": "Patients can easily differentiate between available and unavailable appointment slots visually."
+  },
+  {
+    "summary": "Handle cases where patient email for confirmation is invalid.",
+    "description": "Verify how the system handles sending confirmation emails to invalid or non-existent email addresses.",
+    "customfield_requirement": "The system shall send confirmation emails to patients after booking.",
+    "steps": "Book an appointment for a patient whose registered email address is syntactically invalid (e.g., 'test@.com') or a known non-existent domain.",
+    "actions": "Book an appointment with an invalid patient email.",
+    "expectedResults": "The system logs the email delivery failure, the appointment is still successfully booked, and an internal alert/notification is generated for admin review.",
+    "acceptanceCriteria": "Invalid email addresses do not prevent appointment booking, but email failures are logged and managed for administrative action."
+  },
+  {
+    "summary": "Verify the rescheduling process is intuitive and user-friendly.",
+    "description": "Evaluate the ease of use for a patient to navigate through the rescheduling steps without confusion.",
+    "customfield_requirement": "The system shall allow rescheduling of appointments up to 24 hours before the scheduled time.",
+    "steps": "A first-time user (patient) attempts to reschedule an existing appointment, relying solely on the application's on-screen prompts and interface.",
+    "actions": "Go through the entire rescheduling workflow without external help or guidance.",
+    "expectedResults": "The user successfully navigates the process and reschedules the appointment without confusion, errors, or needing to consult help documentation.",
+    "acceptanceCriteria": "The appointment rescheduling process is clear, guided, and easily understood by the patient."
+  },
+  {
+    "summary": "Verify appointment data (PHI) is encrypted at rest.",
+    "description": "Ensure that sensitive appointment information stored in the database is encrypted to comply with HIPAA requirements.",
+    "customfield_requirement": "All actions must comply with HIPAA standards for data privacy. (HIPAA Security Rule &164.312)",
+    "steps": "(Requires access to database backend/storage). Inspect a sample of appointment records stored in the database.",
+    "actions": "Verify encryption of patient and appointment data at rest in the database.",
+    "expectedResults": "Sensitive appointment details (e.g., patient name, doctor, specific time slots, reason for visit) are stored in an encrypted format, not plain text.",
+    "acceptanceCriteria": "All PHI related to appointments is encrypted when stored in the system's database."
+  }
+]
