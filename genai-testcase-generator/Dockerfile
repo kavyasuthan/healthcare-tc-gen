@@ -21,4 +21,5 @@ ENV PORT=8080
 ENV BACKEND_PORT=5000
 # NOTE: don't hardcode BACKEND_URL here so the app derives it from BACKEND_PORT/PORT at runtime.
 
-CMD ["./start.sh"]
+CMD ["bash", "start.sh"]
+
