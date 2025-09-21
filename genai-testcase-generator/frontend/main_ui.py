@@ -34,7 +34,8 @@ st.session_state.setdefault('last_session_id', None)
 st.session_state.setdefault('last_preview_html', None)
 st.session_state.setdefault('last_columns', None)
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:5000")
+# ✅ Fix: default to 127.0.0.1:8080 for Cloud Run instead of empty string
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8080")
 
 if not st.session_state.username_set:
     username_input = st.text_input("Enter your username")
@@ -72,7 +73,7 @@ with col1:
                     st.subheader("Preview (first 10 rows)")
                     st.markdown(st.session_state.last_preview_html, unsafe_allow_html=True)
                 dl = data.get("download_reviewed")
-                if dl:
+                if dl and BACKEND_URL:
                     link = urljoin(BACKEND_URL, dl.lstrip("/"))
                     st.markdown(f"**Download Excel:** [Click Here]({link})")
             else:
@@ -92,5 +93,5 @@ with col2:
         st.rerun()
 
 st.markdown("---")
-st.header("Admin Review (internal) — not exposed to end user")
+
 st.info("AI review is performed in backend automatically. Admin portal coming later.")
